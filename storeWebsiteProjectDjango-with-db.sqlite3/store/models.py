@@ -7,7 +7,6 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField() # تعداد محصول موجود
-
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_modified = models.DateTimeField(auto_now=True)
 
@@ -31,8 +30,21 @@ class Order(models.Model):
     ]
     # customer
     datetime_created = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=255, choices=ORDER_STATUS, default=ORDER_STATUS_UNPAID)
+    status = models.CharField(max_length=1, choices=ORDER_STATUS, default=ORDER_STATUS_UNPAID)
 
 
-
+class Comment(models.Model):
+    COMMENT_STATUS_WAITING = 'w'
+    COMMENT_STATUS_APPROVED = 'a'
+    COMMENT_STATUS_NOT_APPROVED = 'na'
+    COMMENT_STATUS = [
+        (COMMENT_STATUS_WAITING , 'Waiting'),
+        (COMMENT_STATUS_APPROVED , 'Approved'),
+        (COMMENT_STATUS_NOT_APPROVED , 'Not Approved'),
+    ]
+    # product
+    name = models.CharField(max_length=255)
+    body = models.TextField()
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=2, choices=COMMENT_STATUS, default=COMMENT_STATUS_WAITING)
 
