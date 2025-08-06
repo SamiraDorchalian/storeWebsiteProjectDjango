@@ -1,5 +1,9 @@
 asgiref==3.9.1
 django==4.2.23
+django-debug-toolbar==6.0.0
+factory-boy==3.3.3
+faker==37.5.3
+mysqlclient==2.2.7
 sqlparse==0.5.3
 typing-extensions==4.14.1
 tzdata==2025.2
