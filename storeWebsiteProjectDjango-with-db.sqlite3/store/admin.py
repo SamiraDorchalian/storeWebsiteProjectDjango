@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 
-from .models import Product, Category, Order, Comment, Customer
+from .models import Product, Category, Order, Comment, Customer, OrderItem
 from django.db.models import Count
 from django.utils.html import format_html
 from django.urls import reverse
@@ -36,6 +36,10 @@ class ProductAdmin(admin.ModelAdmin):
     list_select_related = ['category']
     list_filter = ['datetime_created', InventoryFilter]
     actions = ['clear_inventory']
+    search_fields = ['name', ]
+    prepopulated_fields ={
+        'slug': ['name', ]
+    }
     
     def get_queryset(self, request):
         return super().get_queryset(request) \
@@ -81,6 +85,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'status', ]
     list_editable = ['status']
     list_per_page = 10
+    autocomplete_fields = ['product', ]
 
 
 @admin.register(Order)    
@@ -109,3 +114,9 @@ class OrderAdmin(admin.ModelAdmin):
         list_per_page = 10
         ordering = ['last_name', 'first_name', ]
         search_fields = ['first_name__istartswith', 'last_name__istartswith', ]
+
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity', 'unit_price', ]
+    autocomplete_fields = ['product', ]
