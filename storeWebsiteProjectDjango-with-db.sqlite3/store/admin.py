@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 
 from .models import Product, Category, Order, Comment, Customer
 from django.db.models import Count
@@ -35,6 +35,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_select_related = ['category']
     list_filter = ['datetime_created', InventoryFilter]
+    actions = ['clear_inventory']
     
     def get_queryset(self, request):
         return super().get_queryset(request) \
@@ -64,6 +65,16 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.display(ordering='category__title')
     def product_category(self, product):
         return product.category.title
+
+    @admin.action(description='Clear inventory')
+    def clear_inventory(self, request, queryset):
+        update_count = queryset.update(inventory=0)
+        self.message_user(
+            request,
+            f'{update_count} of products inventories cleared to zero.',
+            messages.ERROR,
+        )
+
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
