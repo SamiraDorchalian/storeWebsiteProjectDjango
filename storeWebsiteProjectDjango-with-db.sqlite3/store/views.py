@@ -30,8 +30,9 @@ def product_detail(request, pk):
         return Response(serializer.data)
     elif request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
-        return Response('All ok!')
-
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data
+        return Response('Everything is OK!')
 
 @api_view()
 def category_detail(request, pk):
