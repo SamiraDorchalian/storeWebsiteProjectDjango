@@ -86,4 +86,4 @@ class CartViewSet(CreateModelMixin,
                   DestroyModelMixin):
     serializer_class = CartSerializer
     queryset = Cart.objects.prefetch_related('items__product').all()
-
+    lookup_value_regex = '[0-9a-fA-F]{8}\-?[0-9a-fA-F]{4}\-?[0-9a-fA-F]{4}\-?[0-9a-fA-F]{4}\-?[0-9a-fA-F]{12}'
