@@ -9,8 +9,8 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .models import Category, Product
-from .serializers import ProductSerializer, CategorySerializer
+from .models import Category, Product, Comment
+from .serializers import ProductSerializer, CategorySerializer, CommentSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -41,3 +41,11 @@ class CategoryViewSet(ModelViewSet):
             return Response({'error': 'There is some products relating this category. Please remove them first.'})
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CommentViewSet(ModelViewSet):
+    serializer_class = CommentSerializer
+    # queryset = Comment.objects.all()
+
+    def get_queryset(self):
+        product_pk = self.kwargs['product_pk']
+        return Comment.objects.filter(product_id=product_pk).all()
