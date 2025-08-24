@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "debug_toolbar",
+
+    'django_filters',
     'rest_framework',
+    "debug_toolbar",
 
     # Local App
     'store',
