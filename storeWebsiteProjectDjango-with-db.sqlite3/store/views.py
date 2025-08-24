@@ -11,8 +11,8 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cart, Category, Product, Comment
-from .serializers import ProductSerializer, CategorySerializer, CommentSerializer, CartSerializer
+from .models import Cart, CartItem, Category, Product, Comment
+from .serializers import ProductSerializer, CategorySerializer, CommentSerializer, CartSerializer, CartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 
@@ -43,12 +43,13 @@ class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.prefetch_related('products').all()
 
-    def delete(seld, request, pk):
+    def delete(self, request, pk):
         category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
         if category.products.count() > 0:
             return Response({'error': 'There is some products relating this category. Please remove them first.'})
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
@@ -60,9 +61,19 @@ class CommentViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'product_pk': self.kwargs['product_pk']}
 
+
+class CartItemViewSet(ModelViewSet):
+    serializer_class = CartItemSerializer
+    
+    def get_queryset(self):
+        cart_pk = self.kwargs['cart_pk']
+        return CartItem.objects.select_related('product').filter(cart_id=cart_pk).all()
+
+
 class CartViewSet(CreateModelMixin, 
                   RetrieveModelMixin, 
                   GenericViewSet, 
                   DestroyModelMixin):
     serializer_class = CartSerializer
     queryset = Cart.objects.prefetch_related('items__product').all()
+
