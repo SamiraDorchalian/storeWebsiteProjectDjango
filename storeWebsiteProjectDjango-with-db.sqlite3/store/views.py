@@ -1,19 +1,18 @@
-from itertools import count
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Category, Product, Comment
-from .serializers import ProductSerializer, CategorySerializer, CommentSerializer
+from .models import Cart, Category, Product, Comment
+from .serializers import ProductSerializer, CategorySerializer, CommentSerializer, CartSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 
@@ -23,9 +22,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['name', 'unit_price', 'inventory', ]
     search_fields = ['name', 'category__title',]
-    # pagination_class = PageNumberPagination
     pagination_class = DefaultPagination
-    # filterset_fields = ['category_id', 'inventory']
     filterset_class = ProductFilter
 
     def get_serializer_context(self):
@@ -55,7 +52,6 @@ class CategoryViewSet(ModelViewSet):
 
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    # queryset = Comment.objects.all()
 
     def get_queryset(self):
         product_pk = self.kwargs['product_pk']
@@ -63,3 +59,7 @@ class CommentViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'product_pk': self.kwargs['product_pk']}
+
+class CartViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = CartSerializer
+    queryset = Cart.objects.all()
