@@ -7,16 +7,35 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .models import Category, Product
 from .serializers import ProductSerializer, CategorySerializer
 
-class ProductList(ListCreateAPIView):
+class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.select_related('category').all()
     
     def get_serializer_context(self):
         return {'request': self.request}
+    
+    def destroy(self, request, pk):
+        product = get_object_or_404(
+            Product.objects.select_related('category'), 
+            pk=pk,
+        )
+        if product.order_items.count() > 0:
+            return Response({'error': 'There is some order including this product. Please remove them first.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# class ProductList(ListCreateAPIView):
+#     serializer_class = ProductSerializer
+#     queryset = Product.objects.select_related('category').all()
+    
+#     def get_serializer_context(self):
+#         return {'request': self.request}
 
 # class ProductList(ListCreateAPIView):
 #     def get_serializer_class(self):
@@ -60,37 +79,37 @@ class ProductList(ListCreateAPIView):
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class ProductDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.select_related('category').all()
+# class ProductDetail(RetrieveUpdateDestroyAPIView):
+#     serializer_class = ProductSerializer
+#     queryset = Product.objects.select_related('category').all()
 
-    # def get(self, request, pk):
-    #     product = get_object_or_404(
-    #         Product.objects.select_related('category'), 
-    #         pk=pk,
-    #     )
-    #     serializer = ProductSerializer(product, context={'request': request})
-    #     return Response(serializer.data)
+#     # def get(self, request, pk):
+#     #     product = get_object_or_404(
+#     #         Product.objects.select_related('category'), 
+#     #         pk=pk,
+#     #     )
+#     #     serializer = ProductSerializer(product, context={'request': request})
+#     #     return Response(serializer.data)
     
-    # def put(self, request, pk):
-    #     product = get_object_or_404(
-    #         Product.objects.select_related('category'), 
-    #         pk=pk,
-    #     )
-    #     serializer = ProductSerializer(product, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data)
+#     # def put(self, request, pk):
+#     #     product = get_object_or_404(
+#     #         Product.objects.select_related('category'), 
+#     #         pk=pk,
+#     #     )
+#     #     serializer = ProductSerializer(product, data=request.data)
+#     #     serializer.is_valid(raise_exception=True)
+#     #     serializer.save()
+#     #     return Response(serializer.data)
     
-    def delete(self, request, pk):
-        product = get_object_or_404(
-            Product.objects.select_related('category'), 
-            pk=pk,
-        )
-        if product.order_items.count() > 0:
-            return Response({'error': 'There is some order including this product. Please remove them first.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk):
+#         product = get_object_or_404(
+#             Product.objects.select_related('category'), 
+#             pk=pk,
+#         )
+#         if product.order_items.count() > 0:
+#             return Response({'error': 'There is some order including this product. Please remove them first.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+#         product.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # @api_view(['GET', 'PUT', 'DELETE'])
@@ -113,9 +132,20 @@ class ProductDetail(RetrieveUpdateDestroyAPIView):
 #         product.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class CategoryList(ListCreateAPIView):
+class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.prefetch_related('products').all()
+
+    def delete(seld, request, pk):
+        category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
+        if category.products.count() > 0:
+            return Response({'error': 'There is some products relating this category. Please remove them first.'})
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# class CategoryList(ListCreateAPIView):
+#     serializer_class = CategorySerializer
+#     queryset = Category.objects.prefetch_related('products').all()
 
 # class CategoryList(ListCreateAPIView):
 #     def get_serializer_class(self):
@@ -149,28 +179,28 @@ class CategoryList(ListCreateAPIView):
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class CategoryDetail(RetrieveUpdateDestroyAPIView):
-    serializer_class = CategorySerializer
-    queryset = Category.objects.prefetch_related('products')
+# class CategoryDetail(RetrieveUpdateDestroyAPIView):
+#     serializer_class = CategorySerializer
+#     queryset = Category.objects.prefetch_related('products')
 
-    # def get(self, request, pk):
-    #     category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
-    #     serializer = CategorySerializer(category)
-    #     return Response(serializer.data)
+#     # def get(self, request, pk):
+#     #     category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
+#     #     serializer = CategorySerializer(category)
+#     #     return Response(serializer.data)
     
-    # def put(self, request, pk):
-    #     category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
-    #     serializer = CategorySerializer(category, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data)
+#     # def put(self, request, pk):
+#     #     category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
+#     #     serializer = CategorySerializer(category, data=request.data)
+#     #     serializer.is_valid(raise_exception=True)
+#     #     serializer.save()
+#     #     return Response(serializer.data)
     
-    def delete(seld, request, pk):
-        category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
-        if category.products.count() > 0:
-            return Response({'error': 'There is some products relating this category. Please remove them first.'})
-        category.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(seld, request, pk):
+#         category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
+#         if category.products.count() > 0:
+#             return Response({'error': 'There is some products relating this category. Please remove them first.'})
+#         category.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # @api_view(['GET', 'PUT', 'DELETE'])
 # def category_detail(request, pk):
