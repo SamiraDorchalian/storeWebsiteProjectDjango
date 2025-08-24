@@ -46,10 +46,17 @@ class CommentSerializer(serializers.ModelSerializer):
         product_id = self.context['product_pk']
         return Comment.objects.create(product_id=product_id, **validated_data)
 
+
 class CartProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'unit_price']
+        fields = ['id', 'name', 'unit_price', ]
+
+
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['quantity', ]
 
 
 class AddCartItemSerializer(serializers.ModelSerializer):
