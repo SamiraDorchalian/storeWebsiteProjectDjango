@@ -138,7 +138,6 @@ class CustomerAdmin(admin.ModelAdmin):
         return customer.user.email
 
 
-
 @admin.register(models.OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'unit_price', ]
