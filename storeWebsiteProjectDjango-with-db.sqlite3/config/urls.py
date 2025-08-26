@@ -22,7 +22,9 @@ admin.site.site_header = 'Store'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('store/', include('store.urls')),
+    # Django Djoser
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
     # Debug_Toolbar
     path('__debug__/', include('debug_toolbar.urls')),
-    path('auth/', include('djoser.urls')),
 ]
