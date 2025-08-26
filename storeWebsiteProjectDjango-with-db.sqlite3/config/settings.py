@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Third party Apps
     'django_filters',
     'rest_framework',
+    'djoser',
     "debug_toolbar",
     # Local App
     'store',
