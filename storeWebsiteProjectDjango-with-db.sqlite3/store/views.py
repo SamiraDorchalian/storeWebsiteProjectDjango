@@ -9,14 +9,14 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny, DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Cart, CartItem, Category, Customer, Product, Comment
 from .serializers import ProductSerializer, CategorySerializer, CommentSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
-from .permissions import IsAdminOrReadOnly, SendPrivateEmailToCustomerPermission
+from .permissions import CustomDjangoModelPermissions, IsAdminOrReadOnly, SendPrivateEmailToCustomerPermission
 
 
 class ProductViewSet(ModelViewSet):
@@ -27,6 +27,7 @@ class ProductViewSet(ModelViewSet):
     search_fields = ['name', 'category__title',]
     pagination_class = DefaultPagination
     filterset_class = ProductFilter
+    permission_classes = [CustomDjangoModelPermissions]
 
     def get_serializer_context(self):
         return {'request': self.request}
