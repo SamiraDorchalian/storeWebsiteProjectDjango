@@ -27,7 +27,7 @@ class ProductViewSet(ModelViewSet):
     search_fields = ['name', 'category__title',]
     pagination_class = DefaultPagination
     filterset_class = ProductFilter
-    permission_classes = [CustomDjangoModelPermissions]
+    permission_classes = [IsAdminOrReadOnly]
 
     def get_serializer_context(self):
         return {'request': self.request}
