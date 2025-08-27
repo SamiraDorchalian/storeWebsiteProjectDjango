@@ -17,7 +17,7 @@ from .serializers import OrderCreateSerializer, OrderForAdminSerializer, OrderSe
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 from .permissions import CustomDjangoModelPermissions, IsAdminOrReadOnly, SendPrivateEmailToCustomerPermission
-
+from .signals import order_created
 
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
@@ -162,6 +162,8 @@ class OrderViewSet(ModelViewSet):
         )
         create_order_serializer.is_valid(raise_exception=True)
         created_order = create_order_serializer.save()
+
+        order_created.send_robust(self.__class__, order=created_order)
 
         serializer = OrderSerializer(created_order)
         return Response(serializer.data)
