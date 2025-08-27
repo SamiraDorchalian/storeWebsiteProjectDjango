@@ -63,7 +63,7 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
 class AddCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity', ]
+        fields = ['id', 'product', 'quantity']
 
     def create(self, validated_data):
         cart_id = self.context['cart_pk']
@@ -192,7 +192,7 @@ class OrderCreateSerializer(serializers.Serializer):
                     order = order,
                     product=cart_item.product,
                     unit_price=cart_item.product.unit_price,
-                    auntity=cart_item.quantity,
+                    quantity=cart_item.quantity,
                 ) for cart_item in cart_items
             ]
 
@@ -201,5 +201,3 @@ class OrderCreateSerializer(serializers.Serializer):
             Cart.objects.get(id=cart_id).delete()
 
             return order
-
-# f07ac8be-2b79-4d98-8d91-2ee685cf54e6
