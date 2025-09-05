@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.db.models import Count
 
-from .models import Product, Category, Order, Comment
+from .models import Customer, Product, Category, Order, Comment
 
 class InventoryFilter(admin.SimpleListFilter):
     LESS_THAN_3 = '<3'
     BETWEEN_3_AND_10 = '3<=10'
     MORE_THAN_10 = '>10'
-    
+
     title = 'Critical Inventory Status'
     parameter_name = 'inventory'
 
@@ -29,10 +29,10 @@ class InventoryFilter(admin.SimpleListFilter):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'inventory', 'unit_price', 'inventory_status', 'product_category']
+    list_display = ['id', 'name', 'inventory', 'unit_price', 'inventory_status', 'product_category', ]
     list_per_page = 10
-    list_editable = ['unit_price']
-    list_select_related = ['category']
+    list_editable = ['unit_price', ]
+    list_select_related = ['category', ]
     list_filter = ['datetime_created', InventoryFilter]
 
 
@@ -50,17 +50,17 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'product', 'status']
-    list_editable = ['status']
+    list_display = ['id', 'product', 'status', ]
+    list_editable = ['status', ]
     list_per_page = 10
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'customer', 'status', 'datetime_created', 'num_of_items']
-    list_editable = ['status']
+    list_display = ['id', 'customer', 'status', 'datetime_created', 'num_of_items', ]
+    list_editable = ['status', ]
     list_per_page = 10
-    ordering = ['-datetime_created']
+    ordering = ['-datetime_created', ]
 
     def get_queryset(self, request):
         return super() \
@@ -74,6 +74,13 @@ class OrderAdmin(admin.ModelAdmin):
     def num_of_items(self, order):
         return order.items_count
 
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ['first_name', 'last_name', 'email', ]
+    list_per_page = 10
+    ordering = ['last_name', 'first_name', ]
+    search_fields = ['first_name__istartswith', 'last_name__istartswith', ]
 
 admin.site.register(Category)
 
