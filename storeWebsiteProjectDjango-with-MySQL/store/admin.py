@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.db.models import Count
-
+from django.utils.html import format_html
+from django.urls import reverse
+from django.utils.http import urlencode
 from .models import Customer, Product, Category, Order, Comment
 
 class InventoryFilter(admin.SimpleListFilter):
@@ -29,11 +31,18 @@ class InventoryFilter(admin.SimpleListFilter):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'inventory', 'unit_price', 'inventory_status', 'product_category', ]
+    list_display = ['id', 'name', 'inventory', 'unit_price', 'inventory_status', 'product_category', 'num_of_comments',]
     list_per_page = 10
     list_editable = ['unit_price', ]
     list_select_related = ['category', ]
     list_filter = ['datetime_created', InventoryFilter]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request) \
+        .prefetch_related('comments') \
+        .annotate(
+            comments_count=Count('comments'),
+        )
 
 
     def inventory_status(self, product):
@@ -42,6 +51,18 @@ class ProductAdmin(admin.ModelAdmin):
         if product.inventory > 50:
            return 'High'
         return 'Medium'
+    
+    @admin.display(description='# comments', ordering='comments_count')
+    def num_of_comments(self, product):
+        url = (
+            reverse('admin:store_comment_changelist')
+            + '?'
+            + urlencode({
+                'product__id': product.id
+            })
+
+        )
+        return format_html('<a href="{}">{}</a>', url, product.comments_count)
 
     @admin.display(ordering='category__title')
     def product_category(self, product):
@@ -53,6 +74,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'status', ]
     list_editable = ['status', ]
     list_per_page = 10
+    # list_display_links = ['product']
 
 
 @admin.register(Order)
@@ -70,7 +92,7 @@ class OrderAdmin(admin.ModelAdmin):
                     items_count=Count('items')
                 )
 
-    @admin.display(ordering='items_count')
+    @admin.display(ordering='items_count', description='# items')
     def num_of_items(self, order):
         return order.items_count
 
