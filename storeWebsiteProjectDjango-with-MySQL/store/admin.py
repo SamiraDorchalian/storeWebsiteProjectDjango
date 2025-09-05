@@ -3,6 +3,29 @@ from django.db.models import Count
 
 from .models import Product, Category, Order, Comment
 
+class InventoryFilter(admin.SimpleListFilter):
+    LESS_THAN_3 = '<3'
+    BETWEEN_3_AND_10 = '3<=10'
+    MORE_THAN_10 = '>10'
+    
+    title = 'Critical Inventory Status'
+    parameter_name = 'inventory'
+
+    def lookups(self, request, model_admin):
+        return (
+            (InventoryFilter.LESS_THAN_3, 'High'),
+            (InventoryFilter.BETWEEN_3_AND_10, 'Medium'),
+            (InventoryFilter.MORE_THAN_10, 'Ok'),
+        )
+    
+    def queryset(self, request, queryset):
+        if self.value() == InventoryFilter.LESS_THAN_3:
+            return queryset.filter(inventory__lt=3)
+        if self.value() == InventoryFilter.BETWEEN_3_AND_10:
+            return queryset.filter(inventory__range=(3, 10))
+        if self.value() == '>10':
+            return queryset.filter(inventory__gt=10)
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -10,6 +33,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_editable = ['unit_price']
     list_select_related = ['category']
+    list_filter = ['datetime_created', InventoryFilter]
+
 
     def inventory_status(self, product):
         if product.inventory < 10:
