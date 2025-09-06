@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.http import urlencode
 
-from .models import Customer, Product, Category, Order, Comment
+from .models import Customer, OrderItem, Product, Category, Order, Comment
 
 class InventoryFilter(admin.SimpleListFilter):
     LESS_THAN_3 = '<3'
@@ -37,7 +37,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['unit_price', ]
     list_select_related = ['category', ]
     list_filter = ['datetime_created', InventoryFilter]
-    actions = ['clear_inventory']
+    actions = ['clear_inventory', ]
+    search_fields = ['name', ]
     prepopulated_fields = {
         'slug': ['name', ]
     }
@@ -89,6 +90,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_editable = ['status', ]
     list_per_page = 10
     # list_display_links = ['product']
+    autocomplete_fields = ['product', ]
 
 
 @admin.register(Order)
@@ -117,6 +119,12 @@ class CustomerAdmin(admin.ModelAdmin):
     list_per_page = 10
     ordering = ['last_name', 'first_name', ]
     search_fields = ['first_name__istartswith', 'last_name__istartswith', ]
+
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity', 'unit_price', ]
+    autocomplete_fields = ['product', ]
 
 admin.site.register(Category)
 
