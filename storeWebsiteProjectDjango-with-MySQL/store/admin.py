@@ -93,12 +93,20 @@ class CommentAdmin(admin.ModelAdmin):
     autocomplete_fields = ['product', ]
 
 
+class OrderItemInLine(admin.TabularInline):
+    model = OrderItem
+    fields = ['product', 'quantity', 'unit_price']
+    extra = 1
+    min_num = 1
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'customer', 'status', 'datetime_created', 'num_of_items', ]
     list_editable = ['status', ]
     list_per_page = 10
     ordering = ['-datetime_created', ]
+    inlines = [OrderItemInLine]
 
     def get_queryset(self, request):
         return super() \
