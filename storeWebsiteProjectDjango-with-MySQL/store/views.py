@@ -31,7 +31,7 @@ def product_detail(request, pk):
     elif request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data
+        serializer.save()
         return Response('Everything is OK!')
 
 @api_view()
