@@ -1,5 +1,6 @@
 from decimal import Decimal
 from rest_framework import serializers
+from django.utils.text import slugify
 
 from .models import Category, Product
 
@@ -16,7 +17,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'category', 'unit_price_after_tax', 'inventory', 'slug', 'description']
+        fields = ['id', 'title', 'price', 'category', 'unit_price_after_tax', 'inventory', 'description']
 
     def get_unit_price_after_tax(self, product):
         return round(product.unit_price * Decimal(1.09), 2)   
@@ -25,3 +26,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if len(data['name']) < 6:
             raise serializers.ValidationError('Product title length should be at lease 6.')
         return data
+
+    def create(self, validated_data):
+        product = Product(**validated_data)
+        product.slug = slugify(product.name)
+        product.save()
+        return product
