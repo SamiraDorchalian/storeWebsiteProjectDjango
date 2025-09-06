@@ -60,6 +60,7 @@ class Order(models.Model):
         (ORDER_STATUS_UNPAID ,'Unpaid'),
         (ORDER_STATUS_CANCELED ,'Canceled'),
     ]
+    
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=1, choices=ORDER_STATUS, default=ORDER_STATUS_UNPAID)
@@ -87,6 +88,7 @@ class Comment(models.Model):
         (COMMENT_STATUS_APPROVED,'Approved'),
         (COMMENT_STATUS_NOT_APPROVED,'Not Approved'),
     ]
+
     product = models.ForeignKey(Product , on_delete=models.CASCADE, related_name='comments')
     name = models.CharField(max_length=255)
     body = models.TextField()
@@ -105,3 +107,4 @@ class CartItem(models.Model):
 
     class Meta:
         unique_together = [['cart', 'product']]
+

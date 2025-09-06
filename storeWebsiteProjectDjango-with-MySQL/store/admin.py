@@ -1,10 +1,10 @@
 from django.contrib import admin, messages
 from django.db.models import Count
-from django.utils.html import format_html
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.http import urlencode
 
-from .models import Customer, OrderItem, Product, Category, Order, Comment
+from . import models
 
 class InventoryFilter(admin.SimpleListFilter):
     LESS_THAN_3 = '<3'
@@ -30,7 +30,7 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__gt=10)
 
 
-@admin.register(Product)
+@admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'inventory', 'unit_price', 'inventory_status', 'product_category', 'num_of_comments',]
     list_per_page = 10
@@ -84,7 +84,7 @@ class ProductAdmin(admin.ModelAdmin):
         )
 
 
-@admin.register(Comment)
+@admin.register(models.Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'status', ]
     list_editable = ['status', ]
@@ -94,13 +94,13 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 class OrderItemInLine(admin.TabularInline):
-    model = OrderItem
+    model = models.OrderItem
     fields = ['product', 'quantity', 'unit_price']
     extra = 1
     min_num = 1
 
 
-@admin.register(Order)
+@admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'customer', 'status', 'datetime_created', 'num_of_items', ]
     list_editable = ['status', ]
@@ -121,7 +121,7 @@ class OrderAdmin(admin.ModelAdmin):
         return order.items_count
 
 
-@admin.register(Customer)
+@admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'email', ]
     list_per_page = 10
@@ -129,10 +129,10 @@ class CustomerAdmin(admin.ModelAdmin):
     search_fields = ['first_name__istartswith', 'last_name__istartswith', ]
 
 
-@admin.register(OrderItem)
+@admin.register(models.OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'unit_price', ]
     autocomplete_fields = ['product', ]
 
-admin.site.register(Category)
+admin.site.register(models.Category)
 
