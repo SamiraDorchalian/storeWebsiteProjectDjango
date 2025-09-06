@@ -38,6 +38,9 @@ class ProductAdmin(admin.ModelAdmin):
     list_select_related = ['category', ]
     list_filter = ['datetime_created', InventoryFilter]
     actions = ['clear_inventory']
+    prepopulated_fields = {
+        'slug': ['name', ]
+    }
 
     def get_queryset(self, request):
         return super().get_queryset(request) \
