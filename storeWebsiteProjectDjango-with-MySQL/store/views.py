@@ -1,7 +1,6 @@
 from django.http import HttpResponse
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Count
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,7 +22,7 @@ def product_list(request):
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response('Everything is OK!')
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def product_detail(request, pk):
@@ -45,10 +44,34 @@ def product_detail(request, pk):
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET', 'POST'])
+def category_list(request):
+    if request.method == 'GET':
+        categories_queryset = Category.objects.annotate(
+            products_count=Count('products')
+        ).all()
+        serializer = CategorySerializer(categories_queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = CategorySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-@api_view()
+@api_view(['GET', 'PUT', 'DELETE'])
 def category_detail(request, pk):
-    category = get_object_or_404(Category, pk=pk)
-    serializer = CategorySerializer(category)
-    return Response(serializer.data)
+    category = get_object_or_404(Category.objects.annotate(products_count=Count('products')), pk=pk)
+    if request.method == 'GET':
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    elif request.method == 'DELETE':
+        if category.products.count():
+            return Response({'error': 'There is some products relating this category. Please remove them first.'})
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
