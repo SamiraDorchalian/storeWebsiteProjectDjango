@@ -1,6 +1,7 @@
 asgiref==3.9.1
 Django==4.2.23
 django-debug-toolbar==6.0.0
+djangorestframework==3.16.1
 factory_boy==3.3.3
 Faker==37.5.3
 mysqlclient==2.2.7
