@@ -5,14 +5,15 @@ from django.utils.text import slugify
 from .models import Category, Product
 
 class CategorySerializer(serializers.ModelSerializer):
-    num_of_products = serializers.SerializerMethodField()
+    # num_of_products = serializers.SerializerMethodField()
+    num_of_products = serializers.IntegerField(source='products.count', read_only=True)
 
     class Meta:
         model = Category
         fields = ['id', 'title', 'description', 'num_of_products']
 
-    def get_num_of_products(self, category):
-        return category.products.count()
+    # def get_num_of_products(self, category):
+    #     return category.products.count()
 
 
 class ProductSerializer(serializers.ModelSerializer):
