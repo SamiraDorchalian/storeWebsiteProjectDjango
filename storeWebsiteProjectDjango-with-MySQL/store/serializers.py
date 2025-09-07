@@ -2,7 +2,7 @@ from decimal import Decimal
 from rest_framework import serializers
 from django.utils.text import slugify
 
-from .models import Category, Product
+from .models import Category, Product, Comment
 
 class CategorySerializer(serializers.ModelSerializer):
     # num_of_products = serializers.SerializerMethodField()
@@ -40,7 +40,8 @@ class ProductSerializer(serializers.ModelSerializer):
         product.save()
         return product
 
-    # def update(self, instance, validated_data):
-    #     instance.inventory = validated_data.get('inventory')
-    #     instance.save()
-    #     return instance
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'name', 'product', 'body']
