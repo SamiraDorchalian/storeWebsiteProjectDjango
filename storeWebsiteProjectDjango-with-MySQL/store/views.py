@@ -9,6 +9,7 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 
 from .models import Category, Product, Comment
 from .serializers import ProductSerializer, CategorySerializer, CommentSerializer
@@ -18,8 +19,8 @@ from .filters import ProductFilter
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['category_id', 'inventory']
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['name', 'unit_price', 'inventory']
     filterset_class = ProductFilter
 
     def get_serializer_context(self):
