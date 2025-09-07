@@ -14,7 +14,7 @@ from rest_framework.viewsets import GenericViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Cart, CartItem, Category, Product, Comment
-from .serializers import AddCartItemSerializer, CartSerializer, ProductSerializer, CategorySerializer, CommentSerializer, CartItemSerializer
+from .serializers import AddCartItemSerializer, CartSerializer, ProductSerializer, CategorySerializer, CommentSerializer, CartItemSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 
@@ -72,6 +72,8 @@ class CartItemViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return AddCartItemSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateCartItemSerializer
         return CartItemSerializer
 
     def get_serializer_context(self):
