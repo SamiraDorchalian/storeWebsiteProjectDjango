@@ -13,8 +13,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import GenericViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cart, Category, Product, Comment
-from .serializers import CartSerializer, ProductSerializer, CategorySerializer, CommentSerializer
+from .models import Cart, CartItem, Category, Product, Comment
+from .serializers import CartSerializer, ProductSerializer, CategorySerializer, CommentSerializer, CartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 
@@ -64,6 +64,17 @@ class CommentViewSet(ModelViewSet):
         return {'product_pk': self.kwargs['product_pk']}
 
 
-class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
+class CartItemViewSet(ModelViewSet):
+    serializer_class = CartItemSerializer
+    
+    def get_queryset(self):
+        cart_pk = self.kwargs['cart_pk']
+        return CartItem.objects.select_related('product').filter(cart_id=cart_pk).all()
+
+
+class CartViewSet(CreateModelMixin, 
+                  RetrieveModelMixin, 
+                  DestroyModelMixin, 
+                  GenericViewSet):
     serializer_class = CartSerializer
     queryset = Cart.objects.prefetch_related('items__product').all()
