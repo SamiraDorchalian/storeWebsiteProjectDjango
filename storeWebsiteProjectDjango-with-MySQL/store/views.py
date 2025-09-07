@@ -9,12 +9,13 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Category, Product, Comment
 from .serializers import ProductSerializer, CategorySerializer, CommentSerializer
 from .filters import ProductFilter
-
+from .paginations import DefaultPagination
 
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
@@ -22,6 +23,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter ]
     ordering_fields = ['name', 'unit_price', 'inventory', ]
     search_fields = ['name', 'category__title', ]
+    pagination_class = DefaultPagination
     filterset_class = ProductFilter
 
     def get_serializer_context(self):
