@@ -65,6 +65,8 @@ class CommentViewSet(ModelViewSet):
 
 
 class CartItemViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    
     def get_queryset(self):
         cart_pk = self.kwargs['cart_pk']
         return CartItem.objects.select_related('product').filter(cart_id=cart_pk).all()
