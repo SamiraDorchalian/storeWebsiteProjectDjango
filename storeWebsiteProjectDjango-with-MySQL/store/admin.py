@@ -136,3 +136,13 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Category)
 
+class CartItemInLinr(admin.TabularInline):
+    model = models.CartItem
+    fields = ['id', 'product', 'quantity']
+    extra = 0
+    min_num = 1
+
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'created_at']
+    inlines = [CartItemInLinr]

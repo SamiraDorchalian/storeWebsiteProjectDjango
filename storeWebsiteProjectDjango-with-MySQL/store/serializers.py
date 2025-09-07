@@ -2,7 +2,7 @@ from decimal import Decimal
 from rest_framework import serializers
 from django.utils.text import slugify
 
-from .models import Category, Product, Comment
+from .models import Cart, Category, Product, Comment
 
 class CategorySerializer(serializers.ModelSerializer):
     # num_of_products = serializers.SerializerMethodField()
@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'title', 'description', 'num_of_products']
+        fields = ['id', 'title', 'description', 'num_of_products', ]
 
     # def get_num_of_products(self, category):
     #     return category.products.count()
@@ -24,7 +24,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'category', 'unit_price_after_tax', 'inventory', 'description']
+        fields = ['id', 'title', 'price', 'category', 'unit_price_after_tax', 'inventory', 'description', ]
 
     def get_unit_price_after_tax(self, product):
         return round(product.unit_price * Decimal(1.09), 2)   
@@ -44,9 +44,15 @@ class ProductSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'name', 'body']
+        fields = ['id', 'name', 'body', ]
 
     def create(self, validated_data):
         product_id = self.context['product_pk']
         return Comment.objects.create(product_id=product_id, **validated_data)
         
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ['id', ]
+        read_only_fields = ['id', ]
