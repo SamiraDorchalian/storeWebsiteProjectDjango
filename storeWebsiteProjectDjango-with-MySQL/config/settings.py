@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Third party Apps
+    'django_filters',
     'rest_framework',
     'debug_toolbar',
     # Local App
