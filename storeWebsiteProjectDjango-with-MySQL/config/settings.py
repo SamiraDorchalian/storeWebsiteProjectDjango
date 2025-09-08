@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Third party Apps
     'django_filters',
     'rest_framework',
+    'djoser',
     'debug_toolbar',
     # Local App
     'store',
@@ -147,6 +148,13 @@ REST_FRAMEWORK = {
     # 'PAGE_SIZE': 10,
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT', ),
 }
 
 AUTH_USER_MODEL = 'core.CustomeUser'
