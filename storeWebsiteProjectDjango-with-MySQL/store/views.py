@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -13,8 +13,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import GenericViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cart, CartItem, Category, Product, Comment
-from .serializers import AddCartItemSerializer, CartSerializer, ProductSerializer, CategorySerializer, CommentSerializer, CartItemSerializer, UpdateCartItemSerializer
+from .models import Cart, CartItem, Category, Customer, Product, Comment
+from .serializers import AddCartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CategorySerializer, CommentSerializer, CartItemSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 
@@ -89,3 +89,15 @@ class CartViewSet(CreateModelMixin,
     serializer_class = CartSerializer
     queryset = Cart.objects.prefetch_related('items__product').all()
     lookup_value_regex = '[0-9a-fA-F]{8}\-?[0-9a-fA-F]{4}\-?[0-9a-fA-F]{4}\-?[0-9a-fA-F]{4}\-?[0-9a-fA-F]{12}'
+
+
+class CustomerViewSet(ModelViewSet):
+    serializer_class = CustomerSerializer
+    queryset = Customer.objects.all()
+
+    @action(detail=False)
+    def me(self, request):
+        user_id = request.user.id
+        customer = Customer.objects.get(user_id=user_id)
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
