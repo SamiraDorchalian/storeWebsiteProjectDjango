@@ -18,6 +18,7 @@ from .models import Cart, CartItem, Category, Customer, Product, Comment
 from .serializers import AddCartItemSerializer, CartSerializer, CustomerSerializer, ProductSerializer, CategorySerializer, CommentSerializer, CartItemSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
+from .permissions import IsAdminOrReadOnly
 
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
@@ -45,6 +46,7 @@ class ProductViewSet(ModelViewSet):
 class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.prefetch_related('products').all()
+    permission_classes = [IsAdminOrReadOnly]
 
     def delete(self, request, pk):
         category = get_object_or_404(Category.objects.prefetch_related('products'), pk=pk)
