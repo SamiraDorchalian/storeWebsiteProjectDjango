@@ -59,7 +59,7 @@ class CartProductSerializer(serializers.ModelSerializer):
 class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['quantity']
+        fields = ['quantity', ]
 
 
 class AddCartItemSerializer(serializers.ModelSerializer):
@@ -112,14 +112,24 @@ class CartSerializer(serializers.ModelSerializer):
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['id', 'user', 'birth_date']
-        read_only_fields = ['user']
+        fields = ['id', 'user', 'birth_date', ]
+        read_only_fields = ['user', ]
+
+
+class OrderCustomerSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(max_length=255, source='user.first_name')
+    last_name = serializers.CharField(max_length=255, source='user.last_name')
+    email = serializers.CharField(max_length=255, source='user.email')
+
+    class Meta:
+        model = Customer
+        fields = ['id', 'first_name', 'last_name', 'email', ]
 
 
 class OrderItemProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'unit_price']
+        fields = ['id', 'name', 'unit_price', ]
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -127,11 +137,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'quantity', 'unit_price']
+        fields = ['id', 'product', 'quantity', 'unit_price', ]
 
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
+    customer = OrderCustomerSerializer()
+
     class Meta:
         model = Order
-        fields = ['id', 'customer_id', 'status', 'datetime_created', 'items']
+        fields = ['id', 'customer', 'status', 'datetime_created', 'items', ]
