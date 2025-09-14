@@ -24,6 +24,13 @@ class Customer(models.Model):
     birth_date = models.DateField(null=True, blank=True)
 
 
+class Address(models.Model):
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
+    province = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    street = models.CharField(max_length=255)
+
+
 class Order(models.Model):
     ORDER_STATUS_PAID = 'p' 
     ORDER_STATUS_UNPAID = 'u' 
@@ -52,5 +59,7 @@ class Comment(models.Model):
     body = models.TextField()
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=2, choices=COMMENT_STATUS, default=COMMENT_STATUS_WAITTING)
+
+
 
 
