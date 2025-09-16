@@ -1,14 +1,21 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
-    top_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
+    top_product = models.ForeignKey('Product', on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
+    
+    def __str__(self):
+        return self.title
 
 
 class Discount(models.Model):
     discount = models.FloatField()
     description = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return f'{str(self.discount)} {self.description}'
 
 
 class Product(models.Model):
@@ -17,10 +24,13 @@ class Product(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    inventory = models.IntegerField()
+    inventory = models.IntegerField(validators=[MinValueValidator(0)])
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_modified = models.DateTimeField(auto_now=True)
     discounts = models.ManyToManyField(Discount, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Customer(models.Model):
@@ -29,6 +39,9 @@ class Customer(models.Model):
     email = models.EmailField()
     phone_number = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class Address(models.Model):
@@ -76,6 +89,9 @@ class Comment(models.Model):
     body = models.TextField()
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=2, choices=COMMENT_STATUS, default=COMMENT_STATUS_WAITING)
+
+    def __str__(self):
+        return f'Order id={self.id}'
 
 
 class Cart(models.Model):
