@@ -120,6 +120,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 admin.site.register(Category)
 
+
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'email', ]
