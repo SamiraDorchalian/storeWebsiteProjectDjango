@@ -10,10 +10,12 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Category, Product, Comment
-from .serializer import CategorySerializer, CommentSerializer, ProductSerializer
+from .models import Cart, Category, Product, Comment
+from .serializer import CartSerializer, CategorySerializer, CommentSerializer, ProductSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 
@@ -66,3 +68,9 @@ class CommentViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'product_pk': self.kwargs['product_pk']}
 
+
+class CartViewSet(CreateModelMixin,
+                   RetrieveModelMixin,
+                   GenericViewSet):
+    serializer_class = CartSerializer
+    queryset = Cart.objects.all()

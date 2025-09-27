@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.http import urlencode
 
-from .models import Category, Customer, OrderItem, Product, Order, Comment
+from .models import Cart, CartItem, Category, Customer, OrderItem, Product, Order, Comment
 
 class InventoryFilter(admin.SimpleListFilter):
     LESS_THAN_3 = '<3'
@@ -133,4 +133,17 @@ class CustomerAdmin(admin.ModelAdmin):
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'unit_price']
     autocomplete_fields = ['product', ]
+
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    fields = [ 'id', 'product', 'quantity', ]
+    extra = 1
+    min_num = 1
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'created_at', ]
+    inlines = [CartItemInline]
 
