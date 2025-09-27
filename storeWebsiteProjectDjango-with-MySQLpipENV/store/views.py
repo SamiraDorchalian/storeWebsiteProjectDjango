@@ -12,13 +12,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Category, Product, Comment
 from .serializer import CategorySerializer, CommentSerializer, ProductSerializer
+from .filters import ProductFilter
 
 
 class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category_id', 'inventory', ]
+    # filterset_fields = ['category_id', 'inventory', ]
+    filterset_class = ProductFilter
 
     # We Need This When We Want HyperlinkedModelSerializer in Serializer
     def get_serializer_context(self):
