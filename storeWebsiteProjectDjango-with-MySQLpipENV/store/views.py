@@ -13,14 +13,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny, DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Cart, CartItem, Category, Customer, Product, Comment
 from .serializer import AddCartItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
-from .permissions import IsAdminOrReadOnly, SendPrivateEmailToCustomerPermission
+from .permissions import CustomDjangoModelPermissions, IsAdminOrReadOnly, SendPrivateEmailToCustomerPermission
 
 
 class ProductViewSet(ModelViewSet):
@@ -33,6 +33,7 @@ class ProductViewSet(ModelViewSet):
     pagination_class = DefaultPagination
     # filterset_fields = ['category_id', 'inventory', ]
     filterset_class = ProductFilter
+    permission_classes = [CustomDjangoModelPermissions]
 
     # We Need This When We Want HyperlinkedModelSerializer in Serializer
     def get_serializer_context(self):
