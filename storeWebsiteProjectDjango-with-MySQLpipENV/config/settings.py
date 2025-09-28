@@ -184,4 +184,11 @@ SIMPLE_JWT = {
     # 'REFRESH_TOKEN_LIFETIME': timedelta(seconds=10)
 }
 
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'core.serializers.UserCreateSerializer',
+        'current_user': 'core.serializers.UserSerializer',
+    }
+}
+
 AUTH_USER_MODEL = 'core.CustomeUser'
