@@ -16,8 +16,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny, DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cart, CartItem, Category, Customer, Product, Comment
-from .serializer import AddCartItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
+from .models import Cart, CartItem, Category, Customer, Order, Product, Comment
+from .serializer import AddCartItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, OrderSerializer, ProductSerializer, UpdateCartItemSerializer
 from .filters import ProductFilter
 from .paginations import DefaultPagination
 from .permissions import CustomDjangoModelPermissions, IsAdminOrReadOnly, SendPrivateEmailToCustomerPermission
@@ -33,7 +33,7 @@ class ProductViewSet(ModelViewSet):
     pagination_class = DefaultPagination
     # filterset_fields = ['category_id', 'inventory', ]
     filterset_class = ProductFilter
-    permission_classes = [CustomDjangoModelPermissions]
+    permission_classes = [IsAdminOrReadOnly]
 
     # We Need This When We Want HyperlinkedModelSerializer in Serializer
     def get_serializer_context(self):
@@ -123,3 +123,7 @@ class CustomerViewSet(ModelViewSet):
     def send_private_email(self, request, pk):
         return Response(f'Sending email to customer {pk=}')
 
+
+class OrderViewSet(ModelViewSet):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
