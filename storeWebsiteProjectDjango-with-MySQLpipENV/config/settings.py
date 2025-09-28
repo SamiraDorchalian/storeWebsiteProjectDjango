@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     # Local App
     'store',
     'core',
-
 ]
 
 MIDDLEWARE = [
