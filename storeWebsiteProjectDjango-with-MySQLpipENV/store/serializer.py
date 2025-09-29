@@ -181,4 +181,25 @@ class OrderCreateSerializer(serializers.Serializer):
         cart_id = self.validated_data['cart_id']
         user_id = self.context['user_id']
         customer = Customer.objects.get(user_id=user_id)
+
+        order = Order()
+        order.customer = customer
+        order.save()
+
+        cart_items = CartItem.objects.select_related('product').filter(cart_id=cart_id)
+
+        order_items = list()
+        for cart_item in cart_items:
+            order_item = OrderItem()
+            order_item.order = order
+            order_item.product_id = cart_item.product_id
+            order_item.unit_price = cart_item.product.unit_price
+            order_item.quantity = cart_item.quantity
     
+            order_items.append(order_item)
+
+        OrderItem.objects.bulk_create(order_items)
+
+        Cart.objects.get(id=cart_id).delete()
+
+        return order
